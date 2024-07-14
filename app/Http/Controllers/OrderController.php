@@ -64,7 +64,9 @@ class OrderController extends Controller
 
             if (Feature::active('order-total-price')) {
                 $totalPricePerOrder = $this->getTotalPricePerOrder($order);
+
                 $order->total_amount =  $totalPricePerOrder;
+
                 $order->save();
             }
             SendOrderNotification::dispatch($order,'created',auth()->user());
