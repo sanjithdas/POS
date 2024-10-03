@@ -24,18 +24,32 @@ use Illuminate\Validation\Rule;
 class ProductController extends Controller
 {
     use AuthorizesRequests;
-    public function index()
+    public function index(Request $request)
     {
         try {
-        $this->authorize('viewAny', Product::class);
+            $this->authorize('viewAny', Product::class);
 
-        $products = Product::orderBy("id", "desc")->paginate(10);
+            // Check if a search query is provided
+            $searchTerm = $request->query('search');
 
-        return response()->json($products);
+            $productsQuery = Product::select('id', 'name', 'price', 'description', 'image') // Select specific fields
+            ->orderBy('id', 'desc');
+
+            // If a search term exists, filter products by name or other attributes
+            if ($searchTerm) {
+                $productsQuery->where('name', 'LIKE', '%' . $searchTerm . '%')
+                              ->orWhere('description', 'LIKE', '%' . $searchTerm . '%');
+            }
+
+            // Paginate the results
+            $products = $productsQuery->paginate(10);
+
+            return response()->json($products);
         } catch (AuthorizationException $e) {
             return response()->json(['error' => 'You are not authorized for this action.'], 403);
         }
     }
+
     /**
      * store
      *
