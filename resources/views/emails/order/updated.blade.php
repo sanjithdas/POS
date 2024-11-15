@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <h1>A new Order has been created!</h1>
+    <h1>Order {{ $order->id }} has been updated !</h1>
     <p>Customer ame: {{ $order->customer_name }}</p>
     <p>Customer email : {{ $order->customer_email }}</p>
     <p>Product Price: {{ $order->total_amount }}</p>
