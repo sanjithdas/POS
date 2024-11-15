@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/test', function () {
     $x = "20";
+    echo phpinfo();
     return response()->json(["hi", $x]);
 });
 

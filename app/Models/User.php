@@ -52,13 +52,4 @@ class User extends Authenticatable
         return $this->hasMany(Product::class);
     }
 
-    // public function roles()
-    // {
-    //     return $this->hasMany(Role::class);
-    // }
-    // public function hasRole(Role $role){
-
-    //     return in_array($role->role_type,["admin","editor"]);
-
-    // }
 }

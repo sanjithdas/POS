@@ -36,6 +36,7 @@ class OrderController extends Controller
 
     /**
      * Store a newly created order in storage.
+     * send a notification email
      */
     public function store(OrderRequest $request)
     {
@@ -64,10 +65,10 @@ class OrderController extends Controller
 
             if (Feature::active('order-total-price')) {
                 $totalPricePerOrder = $this->getTotalPricePerOrder($order);
-                $order->total_amount =  $totalPricePerOrder;
+                $order->total_amount = $totalPricePerOrder;
                 $order->save();
             }
-            SendOrderNotification::dispatch($order,'created',auth()->user());
+            SendOrderNotification::dispatch($order, 'created', auth()->user());
             return response()->json($order->load('products'), 201);
         } catch (AuthorizationException $e) {
             return response()->json([
@@ -100,9 +101,11 @@ class OrderController extends Controller
         }
     }
 
-    /**
-     * Update the specified order in storage.
-     */
+/**
+ * update the order and order_product pivot
+ * Send notification email 
+ */
+
     public function update(OrderRequest $request, Order $order)
     {
         $totalPricePerOrder = 0;
@@ -125,21 +128,16 @@ class OrderController extends Controller
                         ['quantity' => $product['quantity'], 'price' => $totalPrice]
                     );
                 }
+                $order->load('products');
             }
-
-            $productModel = Product::findOrFail($product['id']);
-            $totalPrice = $productModel->price * $product['quantity'];
-            $order->products()->updateExistingPivot(
-                $product['id'],
-                ['quantity' => $product['quantity'], 'price' => $totalPrice]
-            );
 
             if (Feature::active('order-total-price')) {
                 $totalPricePerOrder = $this->getTotalPricePerOrder($order);
                 $order->total_amount = $totalPricePerOrder;
                 $order->save();
             }
-            SendOrderNotification::dispatch($order,'updated',auth()->user());
+
+            SendOrderNotification::dispatch($order, 'updated', auth()->user());
             return response()->json($order->load('products'));
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Order not found'], 404);
@@ -150,8 +148,10 @@ class OrderController extends Controller
         }
     }
 
+
     /**
      * Remove the specified order from storage.
+     * send notification email
      */
     public function destroy(Order $order)
     {
@@ -159,7 +159,7 @@ class OrderController extends Controller
             $this->authorize('delete', $order);
             $order->products()->detach();
             $order->delete();
-            SendOrderNotification::dispatch($order,'deleted',auth()->user());
+            SendOrderNotification::dispatch($order, 'deleted', auth()->user());
             return response()->json(null, 204);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Product not found'], 404);

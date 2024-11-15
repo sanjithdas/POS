@@ -82,7 +82,7 @@ class ProductController extends Controller
                 $image = $request->file('image');
                 $imageName = time() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('images'), $imageName);
-                $data['image'] = url('storage/images/' . $imageName); // Store the filename as a string.
+                $data['image'] = url('images/' . $imageName); // Store the filename as a string.
             }
 
 
