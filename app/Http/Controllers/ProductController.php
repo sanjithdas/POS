@@ -27,6 +27,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         try {
+
             $this->authorize('viewAny', Product::class);
 
             // Check if a search query is provided

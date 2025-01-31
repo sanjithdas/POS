@@ -32,7 +32,10 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
    # 7. Email
    # 8. Queue Jobs
    # 9. Guards 
+   # 10. Payment gateway using stripe and barcode generation.
+   # 11. Products and Order creation notifications has been implmenented.
+   # 12. EMail verification notification
  
    # work still progressing... :) sanjithdas
 
-   # To be implemented - Notifications.
+

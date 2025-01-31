@@ -5,11 +5,16 @@ namespace App\Policies;
 use App\Constants\Permissions;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class ProductPolicy
 {
-    public function viewAny(User $user)
+    public function viewAny(?User $user)
     {
+        // allow guest user to view the products.
+        if (!$user) {
+            return true; 
+        }
         return $user->hasPermissionTo(Permissions::VIEW_ALL_PRODUCTS);
     }
 
